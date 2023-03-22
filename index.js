@@ -9,14 +9,14 @@ app.use(express.json())
 app.use(express.static('build'))
 app.use(cors())
 
-morgan.token('body', (req, res) => JSON.stringify(req.body))
+morgan.token('body', (req) => JSON.stringify(req.body))
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body', {
-  skip: (req, res) => req.method !== 'POST'
+  skip: (req) => req.method !== 'POST'
 }))
 
 app.use(morgan('tiny', {
-  skip: (req, res) => req.method === 'POST'
+  skip: (req) => req.method === 'POST'
 }))
 
 app.get('/api/persons', (req, res, next) => {
@@ -54,7 +54,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch(error => next(error))
@@ -108,10 +108,6 @@ app.put('/api/persons/:id', (req, res, next) => {
     })
     .catch(error => next(error))
 })
-
-const generateId = () => {
-  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
-}
 
 const errorHandler = (error, req, res, next) => {
   console.log(error.message)
